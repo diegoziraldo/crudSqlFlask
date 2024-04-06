@@ -1,7 +1,17 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, request, redirect
+from flaskext.mysql import MySQL
+
+
 
 app=Flask(__name__)
+mysql = MySQL()
+
+app.config['MYSQL_DATABASE_HOST']='localhost'
+app.config['MYSQL_DATABASE_USER']='root'
+app.config['MYSQL_DATABASE_PASSWORD']='1234'
+app.config['MYSQL_DATABASE_DB']='sitio'
+mysql.init_app(app)
 
 @app.route('/')
 def inicio():
@@ -29,8 +39,22 @@ def admin_login():
 
 @app.route('/admin/libros')
 def admin_libros():
+    conexion=mysql.connect()
+    print(conexion)
     return render_template('admin/libros.html')
 
+@app.route('/admin/libros/guardar', methods=['POST'])
+def admin_libros_guardar():
+    _nombre = request.form['txtNombre']
+    _archivo = request.files['txtImagen']
+    _url = request.form['txtUrl']
+    
+    print(_nombre)
+    print(_archivo)
+    print(_url)
+
+    
+    return redirect('/admin/libros');
 
 if __name__ == '__main__':
     app.run(debug=True)
